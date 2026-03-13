@@ -24,3 +24,16 @@ class Sandbox:
                 break
 
         return state
+
+def load_environment(environment_name):
+
+    if environment_name == "ecommerce":
+        from environments.ecommerce.scenario import EcommerceScenario
+        return EcommerceScenario()
+
+    elif environment_name == "devops":
+        from environments.devops.scenario import DevOpsScenario
+        return DevOpsScenario()
+
+    else:
+        raise ValueError(f"Unknown environment: {environment_name}")
