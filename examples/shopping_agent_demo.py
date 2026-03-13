@@ -1,3 +1,4 @@
+```python
 import argparse
 
 from core.sandbox import load_environment
@@ -9,38 +10,40 @@ from core.evaluator import Evaluator
 
 
 class ShoppingAgent(AgentInterface):
+    """
+    Shopping agent that decides to buy a laptop if the inventory is empty.
+    """
 
-    def decide(self, state, tools):
+    def decide(self, state: dict, tools: ToolRegistry) -> dict:
+        """
+        Decide the next action based on the current state and available tools.
 
-        # If inventory empty, search and buy
+        Args:
+            state (dict): Current state of the environment.
+            tools (ToolRegistry): Registry of available tools.
+
+        Returns:
+            dict: Next action to take.
+        """
+
+        # If inventory is empty, search for and buy a laptop
         if not state["inventory"]:
-
+            # Search for laptops using the search_products tool
             results = tools.call("search", "laptop")
+            return {"type": "buy", "item": results[0]}
 
-            return {
-                "type": "buy",
-                "item": results[0]
-            }
-
-        # Otherwise finish task
-        return {
-            "type": "complete"
-        }
+        # Otherwise, complete the task
+        return {"type": "complete"}
 
 
 def main():
+    """
+    Main entry point of the program.
+    """
 
-    # Command line argument parsing
-    parser = argparse.ArgumentParser(
-        description="AgentSandbox demo environment"
-    )
-
-    parser.add_argument(
-        "--env",
-        default="ecommerce",
-        help="Environment name (default: ecommerce)"
-    )
-
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="AgentSandbox demo environment")
+    parser.add_argument("--env", default="ecommerce", help="Environment name (default: ecommerce)")
     args = parser.parse_args()
 
     # Load scenario environment
@@ -53,21 +56,18 @@ def main():
     tools = ToolRegistry()
     tools.register("search", search_products)
 
-    # Create agent
+    # Create shopping agent
     agent = ShoppingAgent("shopping_agent")
 
     # Start sandbox
     sandbox = Sandbox(agent, env, tools)
 
+    # Run the sandbox and get the final state
     final_state = sandbox.run()
 
-    # Evaluate results
+    # Evaluate the results
     evaluator = Evaluator()
-
-    result = evaluator.evaluate(
-        final_state,
-        sandbox.history
-    )
+    result = evaluator.evaluate(final_state, sandbox.history)
 
     # Output results
     print("\nFinal State")
@@ -82,3 +82,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
